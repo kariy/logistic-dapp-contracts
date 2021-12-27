@@ -43,7 +43,7 @@ contract CourierContract {
         shipment_type shipment;
         string destination;
         item_status status;
-        Checkpoint check_point;
+        Checkpoint[] check_point;
         uint date_created;
         uint date_completed;
         address forwarded_to;
