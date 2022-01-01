@@ -248,7 +248,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         ContainerItem[] storage qItems = _countryToItemQueues[countryCode];
         // insert all queued Items of countryCode into this Container
         for (uint256 i = 0; i < qItems.length; i++) {
-            _container[containerId].items.push(qItems[i]);
+            _containerToItems[containerId].push(qItems[i]);
         }
 
         // clear queue
