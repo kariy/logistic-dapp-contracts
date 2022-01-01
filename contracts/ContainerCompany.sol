@@ -88,7 +88,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
         uint256 long,
         uint256 lat
     ) external onlyOwner returns (uint256) {
-        // update container count
         _totalContainers++;
 
         Container storage newContainer = _container[_totalContainers];
@@ -210,6 +209,30 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         _updateContainerStatus(containerId, ContainerStatus.Completed);
     }
+
+    //////////////////
+    ///   Getter   ///
+    //////////////////
+
+    function getStatusOfContainer(uint256 containerId)
+        public
+        view
+        returns (ContainerStatus)
+    {
+        return _container[containerId].status;
+    }
+
+    function getItemOfContainer(uint256 containerId)
+        external
+        view
+        returns (ContainerItem[] memory)
+    {
+        return _containerToItems[containerId];
+    }
+
+    ///////////////////
+    ///   Utility   ///
+    ///////////////////
 
     function _updateContainerStatus(
         uint256 containerId,
