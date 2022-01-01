@@ -55,9 +55,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
     /// @dev All Item object forwarded to this contract will be inserted here.
     mapping(uint256 => ContainerItem[]) private _countryToItemQueues;
 
-    /// @dev List of Container IDs based on their assigned country code.
-    mapping(uint256 => uint256[]) private _countryToContainers;
-
     /// @dev To check whether a container with a particular ID exist or not
     mapping(uint256 => bool) private _containerCheck;
 
@@ -80,9 +77,10 @@ contract ContainerCompany is Ownable, ContainerFactory {
         _;
     }
 
-    /// @dev Create a new Container
+    /// @notice Create a new Container
+    /// @dev Container ID starts from 1
     /// @param country The country 3 digits code
-    /// @return ID (index in the _container array) of the Container object
+    /// @return ID of the Container
     function createContainer(
         uint256 country,
         address receiver,
