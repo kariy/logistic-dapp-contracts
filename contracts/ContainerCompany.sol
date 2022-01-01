@@ -4,7 +4,7 @@ import "./Ownable.sol";
 
 abstract contract ContainerFactory {
     event NewContainer(uint256 id, uint256 countryDestination);
-    event NewContainerCheckpoint(uint256 id, string state);
+    // event NewContainerCheckpoint(uint256 id, string state);
 
     enum ContainerStatus {
         Processing,
@@ -40,10 +40,10 @@ abstract contract ContainerFactory {
 
     struct Container {
         uint256 country;
-        address id;
+        // address id;
         Destination destination;
         ContainerStatus status;
-        ContainerItem[] items;
+        // ContainerItem[] items;
         Checkpoint[] checkpoints;
         uint256 dateCreated;
         uint256 dateCompleted;
@@ -143,7 +143,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         _container[containerId].checkpoints.push(newCheckpoint);
 
-        emit NewContainerCheckpoint(containerId, state);
+        // emit NewContainerCheckpoint(containerId, state);
 
         return true;
     }
