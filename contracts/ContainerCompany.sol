@@ -44,7 +44,7 @@ abstract contract ContainerFactory {
         Destination destination;
         ContainerStatus status;
         // ContainerItem[] items;
-        Checkpoint[] checkpoints;
+        // Checkpoint[] checkpoints;
         uint256 dateCreated;
         uint256 dateCompleted;
     }
@@ -67,13 +67,13 @@ contract ContainerCompany is Ownable, ContainerFactory {
     /// @dev List of items inserted into a container
     mapping(uint256 => ContainerItem[]) private _containerToItems;
 
+    /// @dev Container checkpoints
+    mapping(uint256 => Checkpoint[]) private _containerToCheckpoints;
+
     // Container[] private _container;
 
     modifier containerExist(uint256 id) {
-        require(
-            id >= 0 && id < _totalContainers,
-            "Container of that ID does not exist!"
-        );
+        require(_containerCheck[id], "Container of that ID does not exist!");
         _;
     }
 
@@ -89,6 +89,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         uint256 lat
     ) external onlyOwner returns (uint256) {
         _totalContainers++;
+        _containerCheck[_totalContainers] = true;
 
         Container storage newContainer = _container[_totalContainers];
         newContainer.country = country;
@@ -141,14 +142,13 @@ contract ContainerCompany is Ownable, ContainerFactory {
             block.timestamp
         );
 
-        _container[containerId].checkpoints.push(newCheckpoint);
+        _containerToCheckpoints[containerId].push(newCheckpoint);
 
         // emit NewContainerCheckpoint(containerId, state);
 
         return true;
     }
 
-    // owner only function
     function initShipmentOf(
         uint256 containerId,
         string memory state,
@@ -164,7 +164,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
             "This container has already been shipped!"
         );
 
-        // set this contract address
         addContainerCheckpoint(
             containerId,
             state,
@@ -214,7 +213,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
     ///   Getter   ///
     //////////////////
 
-    function getStatusOfContainer(uint256 containerId)
+    function getStatusOf(uint256 containerId)
         public
         view
         returns (ContainerStatus)
@@ -222,12 +221,20 @@ contract ContainerCompany is Ownable, ContainerFactory {
         return _container[containerId].status;
     }
 
-    function getItemOfContainer(uint256 containerId)
+    function getItemsOf(uint256 containerId)
         external
         view
         returns (ContainerItem[] memory)
     {
         return _containerToItems[containerId];
+    }
+
+    function getCheckpointsOf(uint256 containerId)
+        external
+        view
+        returns (Checkpoint[] memory)
+    {
+        return _containerToCheckpoints[containerId];
     }
 
     ///////////////////
