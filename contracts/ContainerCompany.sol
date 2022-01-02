@@ -41,12 +41,12 @@ abstract contract ContainerFactory {
     struct Container {
         uint256 country;
         Destination destination;
-        // address id;
         ContainerStatus status;
-        // ContainerItem[] items;
-        // Checkpoint[] checkpoints;
         uint256 dateCreated;
         uint256 dateCompleted;
+        // address id;
+        // ContainerItem[] items;
+        // Checkpoint[] checkpoints;
     }
 }
 
