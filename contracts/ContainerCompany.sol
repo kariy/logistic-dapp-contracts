@@ -40,8 +40,8 @@ abstract contract ContainerFactory {
 
     struct Container {
         uint256 country;
-        // address id;
         Destination destination;
+        // address id;
         ContainerStatus status;
         // ContainerItem[] items;
         // Checkpoint[] checkpoints;
@@ -122,7 +122,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         _countryToItemQueues[countryDest].push(newContainerItem);
     }
-   
+
     function addContainerCheckpoint(
         uint256 containerId,
         string memory state,
