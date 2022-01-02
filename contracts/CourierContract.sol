@@ -52,6 +52,7 @@ contract CourierContract {
         uint price;
     }
 
+    //map the item
     mapping(uint => Item) public _item;
 
     function create_item(
@@ -187,11 +188,11 @@ contract CourierContract {
         ContainerContractAddress = _container_address;
     }
 
-    function call_queueItem(uint itemId) external{
-        ContainerCompany contract1 = ContainerCompany(ContainerContractAddress); 
-        //address(this)
-        contract1.queueItem(_item[itemId].check_point.location.location_name, address(this), itemId);
-    }
+    // function call_queueItem(uint itemId) external{
+    //     ContainerCompany contract1 = ContainerCompany(ContainerContractAddress); 
+    //     //address(this)
+    //     contract1.queueItem(_item[itemId].destination, address(this), itemId);
+    // }
 
     
 

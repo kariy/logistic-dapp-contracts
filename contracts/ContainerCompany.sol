@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
 import "./Ownable.sol";
@@ -111,7 +112,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
     /// @param courierAddr Address of the Courier contract that the Item belongs to.
     /// @param courierItemId Id of the Item inside the Courier contract.
     function queueItem(
-        uint256 countryDest,
+        uint256 countryDest,//kenapa country destination tu uint256?
         address courierAddr,
         uint256 courierItemId
     ) external {
