@@ -41,13 +41,13 @@ abstract contract ContainerFactory {
 
     struct Container {
         uint256 country;
-        // address id;
         Destination destination;
         ContainerStatus status;
-        // ContainerItem[] items;
-        // Checkpoint[] checkpoints;
         uint256 dateCreated;
         uint256 dateCompleted;
+        // address id;
+        // ContainerItem[] items;
+        // Checkpoint[] checkpoints;
     }
 }
 
@@ -80,7 +80,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
     /// @notice Create a new Container
     /// @dev Container ID starts from 1
-    /// @param country The country 3 digits code
     /// @return ID of the Container
     function createContainer(
         uint256 country,
@@ -124,7 +123,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         _countryToItemQueues[countryDest].push(newContainerItem);
     }
-   
+
     function addContainerCheckpoint(
         uint256 containerId,
         string memory state,
@@ -214,9 +213,19 @@ contract ContainerCompany is Ownable, ContainerFactory {
     ///   Getter   ///
     //////////////////
 
+    function getContainerOf(uint256 containerId)
+        external
+        view
+        containerExist(containerId)
+        returns (Container memory)
+    {
+        return _container[containerId];
+    }
+
     function getStatusOf(uint256 containerId)
         public
         view
+        containerExist(containerId)
         returns (ContainerStatus)
     {
         return _container[containerId].status;
@@ -225,6 +234,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
     function getItemsOf(uint256 containerId)
         external
         view
+        containerExist(containerId)
         returns (ContainerItem[] memory)
     {
         return _containerToItems[containerId];
@@ -233,6 +243,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
     function getCheckpointsOf(uint256 containerId)
         external
         view
+        containerExist(containerId)
         returns (Checkpoint[] memory)
     {
         return _containerToCheckpoints[containerId];
