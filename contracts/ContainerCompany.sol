@@ -111,7 +111,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
     /// @param courierAddr Address of the Courier contract that the Item belongs to.
     /// @param courierItemId Id of the Item inside the Courier contract.
     function queueItem(
-        uint256 countryDest,//kenapa country destination tu uint256?
+        uint256 countryDest,//kenapa country destination tu uint256? COUNTRY CODE
         address courierAddr,
         uint256 courierItemId
     ) external {

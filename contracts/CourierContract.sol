@@ -5,7 +5,9 @@ import "./ContainerCompany.sol";
 
 contract CourierContract {
     uint256 item_count = 0;
-    // address ContainerContractAddress;
+    address ContainerContractAddress;//forward to container
+    mapping(uint256 => Item) public _item;//map the item
+    mapping(uint256 => Checkpoints[]) private _checkpoint;//map checkpoint
 
     enum ItemStatus {
         Processing,
@@ -51,9 +53,6 @@ contract CourierContract {
         uint256 price;
     }
 
-    //map the item
-    mapping(uint256 => Item) public _item;
-
     function create_item(
         uint256 _shipment,
         string memory _destination,
@@ -91,6 +90,7 @@ contract CourierContract {
         item_count++;
     }
 
+    //BUAT MAPPING!!
     function addCheckpoint(
         uint256 itemId,
         string memory _status,
@@ -113,7 +113,7 @@ contract CourierContract {
         ); //record timstamp
 
         //push checkpoint according to itemid
-        _item[itemId].check_point.push(newCheckPoints);
+        _checkpoint[itemId].push(newCheckPoints);
 
         //update itemstatus
         updateItemStatus(itemId, ItemStatus.Ongoing);
@@ -139,12 +139,11 @@ contract CourierContract {
             "This container has already been shipped!"
         );
 
-        //betul ke ni?
         addCheckpoint(
             _itemId,
             _status,
             _desc,
-            msg.sender,
+            msg.sender,//betul ke ni?
             _locName,
             _long,
             _lat
@@ -155,7 +154,7 @@ contract CourierContract {
     //transfer event
     event Transfer(address to, uint256 amount, uint256 balance);
 
-    //Completeshipment function
+    //Completeshipment function try buat payable?
     function completeShipment(
         uint256 _itemId,
         string memory _status,
@@ -163,7 +162,7 @@ contract CourierContract {
         string memory _location_name,
         uint256 _long,
         uint256 _lat
-    ) public payable {
+    ) public{
         // require(
         //     msg.sender == _item[itemId].destination.receiver,
         //     "Only the receiver of this item can complete the shipment!"
@@ -173,22 +172,24 @@ contract CourierContract {
         //     "The shipment of this container is already completed!"
         // );
 
+        _item[_itemId].date_completed = block.timestamp;
+
         addCheckpoint(
             _itemId,
             _status,
             _desc,
-            msg.sender,
+            msg.sender,//betul ke?
             _location_name,
             _long,
             _lat
         );
         updateItemStatus(_itemId, ItemStatus.Delivered);
 
-        if (msg.value < _item[_itemId].price) {
-            revert("Transaction failed");
-        }
+        // if (msg.value < _item[_itemId].price) {
+        //     revert("Transaction failed");
+        // }
 
-        emit Transfer(msg.sender, msg.value, address(this).balance);
+        // emit Transfer(msg.sender, msg.value, address(this).balance);
 
         //payTo(msg.sender.address, price);
     }
@@ -207,20 +208,39 @@ contract CourierContract {
     //     ContainerCompany contract1 = ContainerCompany(ContainerContractAddress);
     //     //address(this)
     //     contract1.queueItem(_item[itemId].destination, address(this), itemId);
+    //     //addCheckpoint();
+    //     updateItemStatus(itemId, ItemStatus.Ongoing);
     // }
 
     // pandai2 kau adjust
     // yang aku buat tu basically, what the function should do
-    /// @param ...rest : just a placeholder kalau2 ada parameters lain yang perlu
-    function forwardItemToContainer(address containerAddress, uint256 itemId, ...rest)
+    // @param ...rest : just a placeholder kalau2 ada parameters lain yang perlu | diam ahh
+    function forwardItemToContainer(
+        address containerAddress, 
+        uint256 _itemId, 
+        uint countryCode,
+        string memory _status,
+        string memory _desc,
+        string memory _locName,
+        uint256 _long,
+        uint256 _lat)
         external
     {
-        // ContainerContract containerContract = ContainerContract(containerAddress)
-        // containerContract.queueItem(countryDest, address(this), itemId)
-        //
-        // _item[itemId].forwarded_to = containerAddress
-        //
-        // addCheckpoint()
-        // updateItemStatus()
+        ContainerCompany containerContract = ContainerCompany(containerAddress);
+        containerContract.queueItem(countryCode, address(this), _itemId);
+        
+        _item[_itemId].forwarded_to = containerAddress;
+        
+        addCheckpoint(
+            _itemId,
+            _status,
+            _desc,
+            msg.sender,
+            _locName,
+            _long,
+            _lat
+        );
+
+        updateItemStatus(_itemId, ItemStatus.Ongoing);//ongoing ke 
     }
 }
