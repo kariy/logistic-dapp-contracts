@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
+
 import "./Ownable.sol";
 import "./ContainerCompany.sol";
 
@@ -52,11 +53,7 @@ abstract contract CourierFactory {
     }
 }
 
-contract CourierContract is CourierFactory {
-    //checkpoint count
-    uint256 private _totalCheckpoints = 0;
-    
-    //item count
+contract CourierContract is Ownable, CourierFactory {
     uint256 private _totalItems = 0;
 
     //map the Item to its ID
@@ -77,8 +74,8 @@ contract CourierContract is CourierFactory {
         string memory locName,
         uint256 long,
         uint256 lat
-    ) external returns (uint256) {
-        _totalItems++;// the item id starts with 1 ... 
+    ) external onlyOwner returns (uint256) {
+        _totalItems++;
 
         Item storage newItem = _item[_totalItems];
         newItem.id = _totalItems;
@@ -113,8 +110,6 @@ contract CourierContract is CourierFactory {
 
         // insert checkpoint to its Item
         _itemToCheckpoints[itemId].push(newCheckpoint);
-
-        _totalCheckpoints++;
     }
 
     function _updateItemStatus(uint256 itemId, ItemStatus newStatus)
@@ -133,9 +128,9 @@ contract CourierContract is CourierFactory {
         string memory locName,
         uint256 long,
         uint256 lat
-    ) external itemExist(itemId) {
+    ) external itemExist(itemId) onlyOwner {
         require(
-            _item[itemId].status != ItemStatus.Ongoing,
+            _item[itemId].status == ItemStatus.Ongoing,
             "This item has already been shipped!"
         );
 
@@ -158,121 +153,61 @@ contract CourierContract is CourierFactory {
     //transfer event
     event Transfer(address to, uint256 amount, uint256 balance);
 
-    //Completeshipment function try buat payable?
-    function completeShipment(
-        uint256 _itemId,
-        string memory _status,
-        string memory _desc,
-        string memory _location_name,
-        uint256 _long,
-        uint256 _lat
-    ) public {
-        // require(
-        //     msg.sender == _item[itemId].destination.receiver,
-        //     "Only the receiver of this item can complete the shipment!"
-        // );
-        // require(
-        //     _item.status != ItemStatus.Delivered,
-        //     "The shipment of this container is already completed!"
-        // );
+    // Completeshipment function try buat payable?
+    function completeItemShipment(
+        uint256 itemId,
+        string memory status,
+        string memory desc,
+        string memory locName,
+        uint256 long,
+        uint256 lat
+    ) external itemExist(itemId) {
+        Item storage item = _item[itemId];
 
-        _item[_itemId].dateCompleted = block.timestamp;
-
-        addItemCheckpoint(
-            _itemId,
-            _status,
-            _desc,
-            msg.sender, //betul ke?
-            _location_name,
-            _long,
-            _lat
+        require(
+            msg.sender == item.destination.receiver,
+            "Only the receiver of this item can complete the shipment!"
         );
-        _updateItemStatus(_itemId, ItemStatus.Completed);
+        require(
+            item.status != ItemStatus.Completed,
+            "The shipment of this container is already completed!"
+        );
 
-        // if (msg.value < _item[_itemId].price) {
-        //     revert("Transaction failed");
-        // }
+        item.dateCompleted = block.timestamp;
 
-        // emit Transfer(msg.sender, msg.value, address(this).balance);
-
-        //payTo(msg.sender.address, price);
+        addItemCheckpoint(itemId, status, desc, msg.sender, locName, long, lat);
+        _updateItemStatus(itemId, ItemStatus.Completed);
     }
 
     // function transferEth(address payable recipient, uint itemId)external {
     //     recipient.transfer(_item[itemId].price);
     // }
 
-    //forward function
-    // function setAddress(address _container_address) external {
-    //     //https://www.youtube.com/watch?v=YxU87o4U5iw
-    //     ContainerContractAddress = _container_address;
-    // }
-
-    // function call_queueItem(uint itemId) external{
-    //     ContainerCompany contract1 = ContainerCompany(ContainerContractAddress);
-    //     //address(this)
-    //     contract1.queueItem(_item[itemId].destination, address(this), itemId);
-    //     //addCheckpoint();
-    //     updateItemStatus(itemId, ItemStatus.Ongoing);
-    // }
-
-    // pandai2 kau adjust
-    // yang aku buat tu basically, what the function should do
-    // @param ...rest : just a placeholder kalau2 ada parameters lain yang perlu | diam ahh
     function forwardItemToContainer(
         address containerAddress,
-        uint256 _itemId,
+        uint256 itemId,
         uint256 countryCode,
-        string memory _status,
-        string memory _desc,
-        string memory _locName,
-        uint256 _long,
-        uint256 _lat
-    ) external {
+        string memory status,
+        string memory desc,
+        string memory locName,
+        uint256 long,
+        uint256 lat
+    ) external itemExist(itemId) {
         ContainerCompany containerContract = ContainerCompany(containerAddress);
-        containerContract.queueItem(countryCode, address(this), _itemId);
+        containerContract.queueItem(countryCode, address(this), itemId);
 
-        _item[_itemId].forwardedTo = containerAddress;
+        _item[itemId].forwardedTo = containerAddress;
 
         addItemCheckpoint(
-            _itemId,
-            _status,
-            _desc,
-            msg.sender,
-            _locName,
-            _long,
-            _lat
+            itemId,
+            status,
+            desc,
+            address(this),
+            locName,
+            long,
+            lat
         );
 
-        _updateItemStatus(_itemId, ItemStatus.Ongoing); //ongoing ke
+        _updateItemStatus(itemId, ItemStatus.Ongoing);
     }
-
-    //////////////////
-    ///   Getter   ///
-    //////////////////
-
-    //get all checkpoints based on item id
-    function getCheckpoint(uint256 itemId)external view itemExist(itemId) returns(Checkpoint[] memory){
-        return _itemToCheckpoints[itemId];
-    }
-
-    //return all item details
-    function getItemDetails(uint256 itemId)external view itemExist(itemId) returns(Item memory){
-        return _item[itemId];
-    }
-
-    //return the status of the item
-    function getStatusItem(uint256 itemId)external view itemExist(itemId) returns(ItemStatus){
-        return _item[itemId].status;
-    }
-    
-    //return all checkpoints of the items
-    // function getCheckpoints(uint itemId)public view returns(Checkpoint[] memory){
-    //     Checkpoint[] memory cp = new Checkpoint[](_totalCheckpoints );
-    //     for(uint i = 1; i<_totalCheckpoints ; i++){
-    //         Checkpoint storage cp1 = _itemToCheckpoints[itemId].;
-    //         cp[i] = cp1;
-    //     }
-    //     return cp;
-    // }
 }
