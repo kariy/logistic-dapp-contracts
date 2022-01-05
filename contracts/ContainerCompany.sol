@@ -4,14 +4,20 @@ pragma solidity >=0.7.0;
 import "./Ownable.sol";
 
 abstract contract ContainerFactory {
-    event NewContainer(uint256 id, uint256 countryDestination);
-    // event NewContainerCheckpoint(uint256 id, string state);
+    event NewContainer(uint256 containerId);
+    event ContainerShipped(uint256 containerId);
+    event ContainerDelivered(uint256 containerId);
 
     enum ContainerStatus {
         Processing,
-        Shipped,
+        Ongoing,
         Completed,
         LostInTransit
+    }
+
+    enum ShipmentType {
+        Domestic,
+        International
     }
 
     struct ContainerItem {
@@ -27,7 +33,7 @@ abstract contract ContainerFactory {
     }
 
     struct Checkpoint {
-        string state;
+        string status;
         string desc;
         address operator;
         Location location;
@@ -40,14 +46,13 @@ abstract contract ContainerFactory {
     }
 
     struct Container {
-        uint256 country;
+        uint256 id;
+        ShipmentType shipmentType;
+        uint8 countryDestination;
         Destination destination;
         ContainerStatus status;
         uint256 dateCreated;
         uint256 dateCompleted;
-        // address id;
-        // ContainerItem[] items;
-        // Checkpoint[] checkpoints;
     }
 }
 
@@ -71,10 +76,11 @@ contract ContainerCompany is Ownable, ContainerFactory {
     /// @dev Container checkpoints
     mapping(uint256 => Checkpoint[]) private _containerToCheckpoints;
 
-    // Container[] private _container;
-
     modifier containerExist(uint256 id) {
-        require(_containerCheck[id], "Container of that ID does not exist!");
+        require(
+            id > 0 && id <= _totalContainers,
+            "Container of that ID does not exist!"
+        );
         _;
     }
 
@@ -82,7 +88,8 @@ contract ContainerCompany is Ownable, ContainerFactory {
     /// @dev Container ID starts from 1
     /// @return ID of the Container
     function createContainer(
-        uint256 country,
+        ShipmentType shipmentType,
+        uint8 country,
         address receiver,
         string memory locName,
         uint256 long,
@@ -92,26 +99,26 @@ contract ContainerCompany is Ownable, ContainerFactory {
         _containerCheck[_totalContainers] = true;
 
         Container storage newContainer = _container[_totalContainers];
-        newContainer.country = country;
+        newContainer.id = _totalContainers;
+        newContainer.countryDestination = country;
         newContainer.destination.receiver = receiver;
         newContainer.destination.location = Location(locName, long, lat);
         newContainer.dateCreated = block.timestamp;
-
-        uint256 newContainerId = _totalContainers;
+        newContainer.shipmentType = shipmentType;
 
         // insert all queued Items of countryCode into this Container
-        _unqueueItemsToContainer(newContainerId);
+        _unqueueItemsToContainer(newContainer.id);
 
-        emit NewContainer(_totalContainers, country);
+        emit NewContainer(newContainer.id);
 
-        return _totalContainers;
+        return newContainer.id;
     }
 
     /// @dev Queue Item (according to their country destination) for Container insertion
     /// @param courierAddr Address of the Courier contract that the Item belongs to.
     /// @param courierItemId Id of the Item inside the Courier contract.
     function queueItem(
-        uint256 countryDest,//kenapa country destination tu uint256? COUNTRY CODE
+        uint256 countryDest, //kenapa country destination tu uint256? COUNTRY CODE
         address courierAddr,
         uint256 courierItemId
     ) external {
@@ -126,7 +133,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
     function addContainerCheckpoint(
         uint256 containerId,
-        string memory state,
+        string memory status,
         string memory desc,
         address operator,
         string memory locName,
@@ -135,7 +142,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
     ) public containerExist(containerId) returns (bool) {
         Location memory loc = Location(locName, long, lat);
         Checkpoint memory newCheckpoint = Checkpoint(
-            state,
+            status,
             desc,
             operator,
             loc,
@@ -144,18 +151,16 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         _containerToCheckpoints[containerId].push(newCheckpoint);
 
-        // emit NewContainerCheckpoint(containerId, state);
-
         return true;
     }
 
-    function initShipmentOf(
+    function initContainerShipment(
         uint256 containerId,
-        string memory state,
-        string memory desc,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory checkpointStatus,
+        string memory checkpointDesc,
+        string memory checkpointLocName,
+        uint256 checkpointLong,
+        uint256 checkpointLat
     ) external containerExist(containerId) onlyOwner {
         Container storage container = _container[containerId];
 
@@ -166,24 +171,26 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         addContainerCheckpoint(
             containerId,
-            state,
-            desc,
-            owner(),
-            locName,
-            long,
-            lat
+            checkpointStatus,
+            checkpointDesc,
+            address(this),
+            checkpointLocName,
+            checkpointLong,
+            checkpointLat
         );
 
-        _updateContainerStatus(containerId, ContainerStatus.Shipped);
+        _updateContainerStatus(container.id, ContainerStatus.Ongoing);
+
+        emit ContainerShipped(container.id);
     }
 
-    function completeShipmentOf(
+    function completeContainerShipment(
         uint256 containerId,
-        string memory state,
-        string memory desc,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory checkpointStatus,
+        string memory checkpointDesc,
+        string memory checkpointLocName,
+        uint256 checkpointLong,
+        uint256 checkpointLat
     ) external containerExist(containerId) {
         Container storage container = _container[containerId];
 
@@ -198,15 +205,17 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         addContainerCheckpoint(
             containerId,
-            state,
-            desc,
+            checkpointStatus,
+            checkpointDesc,
             msg.sender,
-            locName,
-            long,
-            lat
+            checkpointLocName,
+            checkpointLong,
+            checkpointLat
         );
 
-        _updateContainerStatus(containerId, ContainerStatus.Completed);
+        _updateContainerStatus(container.id, ContainerStatus.Completed);
+
+        emit ContainerDelivered(container.id);
     }
 
     //////////////////
@@ -262,7 +271,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
     }
 
     function _unqueueItemsToContainer(uint256 containerId) private {
-        uint256 countryCode = _container[containerId].country;
+        uint8 countryCode = _container[containerId].countryDestination;
 
         ContainerItem[] storage qItems = _countryToItemQueues[countryCode];
         // insert all queued Items of countryCode into this Container
