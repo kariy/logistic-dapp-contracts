@@ -48,7 +48,7 @@ abstract contract CourierFactory {
         address forwardedTo;
         uint256 dateCreated;
         uint256 dateCompleted;
-        address payee;//seller
+        address payable payee;//seller
         uint256 price;
     }
 }
@@ -73,7 +73,7 @@ contract CourierContract is CourierFactory {
         uint8 country,
         address receiver,
         string memory locName,
-        address _payee,
+        address payable _payee,
         uint256 _price
         // uint256 long,
         // uint256 lat
@@ -208,6 +208,10 @@ contract CourierContract is CourierFactory {
             // _long,
             // _lat
         );
+
+        
+        address payable payee = _item[_itemId].payee;
+        payee.transfer(msg.value);
 
         _updateItemStatus(_itemId, ItemStatus.Completed);
         emit ItemDelivered(itemId);
