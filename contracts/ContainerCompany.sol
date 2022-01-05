@@ -28,8 +28,8 @@ abstract contract ContainerFactory {
 
     struct Location {
         string name;
-        uint256 long;
-        uint256 lat;
+        // uint256 long;
+        // uint256 lat;
     }
 
     struct Checkpoint {
@@ -61,9 +61,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
     /// @dev All Item object forwarded to this contract will be inserted here.
     mapping(uint256 => ContainerItem[]) private _countryToItemQueues;
 
-    /// @dev To check whether a container with a particular ID exist or not
-    mapping(uint256 => bool) private _containerCheck;
-
     uint256 private _totalContainers = 0;
 
     /// @notice A table of all Container based on its ID
@@ -86,23 +83,23 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
     /// @notice Create a new Container
     /// @dev Container ID starts from 1
-    /// @return ID of the Container
     function createContainer(
         ShipmentType shipmentType,
         uint8 country,
         address receiver,
-        string memory locName,
-        uint256 long,
-        uint256 lat
-    ) external onlyOwner returns (uint256) {
+        string memory locName
+    )
+        external
+        onlyOwner
+        returns (uint256 _containerId, ContainerStatus _status)
+    {
         _totalContainers++;
-        _containerCheck[_totalContainers] = true;
 
         Container storage newContainer = _container[_totalContainers];
         newContainer.id = _totalContainers;
         newContainer.countryDestination = country;
         newContainer.destination.receiver = receiver;
-        newContainer.destination.location = Location(locName, long, lat);
+        newContainer.destination.location = Location(locName);
         newContainer.dateCreated = block.timestamp;
         newContainer.shipmentType = shipmentType;
 
@@ -111,7 +108,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
         emit NewContainer(newContainer.id);
 
-        return newContainer.id;
+        return (newContainer.id, newContainer.status);
     }
 
     /// @dev Queue Item (according to their country destination) for Container insertion
@@ -136,11 +133,9 @@ contract ContainerCompany is Ownable, ContainerFactory {
         string memory status,
         string memory desc,
         address operator,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory locName
     ) public containerExist(containerId) returns (bool) {
-        Location memory loc = Location(locName, long, lat);
+        Location memory loc = Location(locName);
         Checkpoint memory newCheckpoint = Checkpoint(
             status,
             desc,
@@ -158,10 +153,13 @@ contract ContainerCompany is Ownable, ContainerFactory {
         uint256 containerId,
         string memory checkpointStatus,
         string memory checkpointDesc,
-        string memory checkpointLocName,
-        uint256 checkpointLong,
-        uint256 checkpointLat
-    ) external containerExist(containerId) onlyOwner {
+        string memory checkpointLocName
+    )
+        external
+        containerExist(containerId)
+        onlyOwner
+        returns (uint256 _containerId, ContainerStatus _status)
+    {
         Container storage container = _container[containerId];
 
         require(
@@ -174,24 +172,26 @@ contract ContainerCompany is Ownable, ContainerFactory {
             checkpointStatus,
             checkpointDesc,
             address(this),
-            checkpointLocName,
-            checkpointLong,
-            checkpointLat
+            checkpointLocName
         );
 
         _updateContainerStatus(container.id, ContainerStatus.Ongoing);
 
         emit ContainerShipped(container.id);
+
+        return (container.id, container.status);
     }
 
     function completeContainerShipment(
         uint256 containerId,
         string memory checkpointStatus,
         string memory checkpointDesc,
-        string memory checkpointLocName,
-        uint256 checkpointLong,
-        uint256 checkpointLat
-    ) external containerExist(containerId) {
+        string memory checkpointLocName
+    )
+        external
+        containerExist(containerId)
+        returns (uint256 _containerId, ContainerStatus _status)
+    {
         Container storage container = _container[containerId];
 
         require(
@@ -208,27 +208,80 @@ contract ContainerCompany is Ownable, ContainerFactory {
             checkpointStatus,
             checkpointDesc,
             msg.sender,
-            checkpointLocName,
-            checkpointLong,
-            checkpointLat
+            checkpointLocName
         );
 
         _updateContainerStatus(container.id, ContainerStatus.Completed);
 
         emit ContainerDelivered(container.id);
+
+        return (container.id, container.status);
+    }
+
+    function setContainerAsMissing(
+        uint256 containerId,
+        string memory checkpointStatus,
+        string memory checkpointDesc,
+        string memory checkpointLocName
+    )
+        external
+        containerExist(containerId)
+        onlyOwner
+        returns (uint256 _containerId, ContainerStatus _status)
+    {
+        Container storage container = _container[containerId];
+
+        require(
+            container.status != ContainerStatus.Completed,
+            "The shipment of this container is already completed!"
+        );
+
+        addContainerCheckpoint(
+            containerId,
+            checkpointStatus,
+            checkpointDesc,
+            address(this),
+            checkpointLocName
+        );
+
+        _updateContainerStatus(container.id, ContainerStatus.LostInTransit);
+
+        return (container.id, container.status);
     }
 
     //////////////////
     ///   Getter   ///
     //////////////////
 
+    function getTotalContainers() external view returns (uint256) {
+        return _totalContainers;
+    }
+
     function getContainerOf(uint256 containerId)
         external
         view
         containerExist(containerId)
-        returns (Container memory)
+        returns (
+            uint256 id,
+            ShipmentType shipmentType,
+            uint8 countryDestination,
+            Destination memory destination,
+            ContainerStatus status,
+            uint256 dateCreated,
+            uint256 dateCompleted
+        )
     {
-        return _container[containerId];
+        Container storage container = _container[containerId];
+
+        return (
+            container.id,
+            container.shipmentType,
+            container.countryDestination,
+            container.destination,
+            container.status,
+            container.dateCreated,
+            container.dateCompleted
+        );
     }
 
     function getStatusOf(uint256 containerId)
@@ -274,6 +327,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         uint8 countryCode = _container[containerId].countryDestination;
 
         ContainerItem[] storage qItems = _countryToItemQueues[countryCode];
+
         // insert all queued Items of countryCode into this Container
         for (uint256 i = 0; i < qItems.length; i++) {
             _containerToItems[containerId].push(qItems[i]);
