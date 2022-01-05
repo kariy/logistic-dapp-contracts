@@ -152,44 +152,30 @@ contract CourierContract is CourierFactory {
     //transfer event
     event Transfer(address to, uint256 amount, uint256 balance);
 
-    //Completeshipment function try buat payable?
-    function completeShipment(
-        uint256 _itemId,
-        string memory _status,
-        string memory _desc,
-        string memory _location_name,
-        uint256 _long,
-        uint256 _lat
-    ) public {
-        // require(
-        //     msg.sender == _item[itemId].destination.receiver,
-        //     "Only the receiver of this item can complete the shipment!"
-        // );
-        // require(
-        //     _item.status != ItemStatus.Delivered,
-        //     "The shipment of this container is already completed!"
-        // );
+    // Completeshipment function try buat payable?
+    function completeItemShipment(
+        uint256 itemId,
+        string memory status,
+        string memory desc,
+        string memory locName,
+        uint256 long,
+        uint256 lat
+    ) external itemExist(itemId) {
+        Item storage item = _item[itemId];
 
-        _item[_itemId].dateCompleted = block.timestamp;
-
-        addItemCheckpoint(
-            _itemId,
-            _status,
-            _desc,
-            msg.sender, //betul ke?
-            _location_name,
-            _long,
-            _lat
+        require(
+            msg.sender == item.destination.receiver,
+            "Only the receiver of this item can complete the shipment!"
         );
-        _updateItemStatus(_itemId, ItemStatus.Completed);
+        require(
+            item.status != ItemStatus.Completed,
+            "The shipment of this container is already completed!"
+        );
 
-        // if (msg.value < _item[_itemId].price) {
-        //     revert("Transaction failed");
-        // }
+        item.dateCompleted = block.timestamp;
 
-        // emit Transfer(msg.sender, msg.value, address(this).balance);
-
-        //payTo(msg.sender.address, price);
+        addItemCheckpoint(itemId, status, desc, msg.sender, locName, long, lat);
+        _updateItemStatus(itemId, ItemStatus.Completed);
     }
 
     // function transferEth(address payable recipient, uint itemId)external {
@@ -198,29 +184,29 @@ contract CourierContract is CourierFactory {
 
     function forwardItemToContainer(
         address containerAddress,
-        uint256 _itemId,
+        uint256 itemId,
         uint256 countryCode,
-        string memory _status,
-        string memory _desc,
-        string memory _locName,
-        uint256 _long,
-        uint256 _lat
-    ) external {
+        string memory status,
+        string memory desc,
+        string memory locName,
+        uint256 long,
+        uint256 lat
+    ) external itemExist(itemId) {
         ContainerCompany containerContract = ContainerCompany(containerAddress);
-        containerContract.queueItem(countryCode, address(this), _itemId);
+        containerContract.queueItem(countryCode, address(this), itemId);
 
-        _item[_itemId].forwardedTo = containerAddress;
+        _item[itemId].forwardedTo = containerAddress;
 
         addItemCheckpoint(
-            _itemId,
-            _status,
-            _desc,
-            msg.sender,
-            _locName,
-            _long,
-            _lat
+            itemId,
+            status,
+            desc,
+            address(this),
+            locName,
+            long,
+            lat
         );
 
-        _updateItemStatus(_itemId, ItemStatus.Ongoing); //ongoing ke
+        _updateItemStatus(itemId, ItemStatus.Ongoing);
     }
 }
