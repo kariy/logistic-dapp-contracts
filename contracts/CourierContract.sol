@@ -23,8 +23,8 @@ abstract contract CourierFactory {
 
     struct Location {
         string name;
-        uint256 long;
-        uint256 lat;
+        // uint256 long;
+        // uint256 lat;
     }
 
     struct Destination {
@@ -71,9 +71,7 @@ contract CourierContract is Ownable, CourierFactory {
         ShipmentType shipmentType,
         uint8 country,
         address receiver,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory locName
     ) external onlyOwner returns (uint256) {
         _totalItems++;
 
@@ -81,7 +79,7 @@ contract CourierContract is Ownable, CourierFactory {
         newItem.id = _totalItems;
         newItem.countryDestination = country;
         newItem.destination.receiver = receiver;
-        newItem.destination.location = Location(locName, long, lat);
+        newItem.destination.location = Location(locName);
         newItem.dateCreated = block.timestamp;
         newItem.shipmentType = shipmentType;
 
@@ -95,11 +93,9 @@ contract CourierContract is Ownable, CourierFactory {
         string memory status,
         string memory desc,
         address operator,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory locName
     ) public itemExist(itemId) {
-        Location memory newLoc = Location(locName, long, lat);
+        Location memory newLoc = Location(locName);
         Checkpoint memory newCheckpoint = Checkpoint(
             status,
             desc,
@@ -125,9 +121,7 @@ contract CourierContract is Ownable, CourierFactory {
         uint256 itemId,
         string memory status,
         string memory desc,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory locName
     ) external itemExist(itemId) onlyOwner {
         require(
             _item[itemId].status == ItemStatus.Ongoing,
@@ -137,15 +131,7 @@ contract CourierContract is Ownable, CourierFactory {
         // The operator of this checkpoint would be this contract
         // because why would you want to let someone else initiate
         // the shipment of the items?
-        addItemCheckpoint(
-            itemId,
-            status,
-            desc,
-            address(this),
-            locName,
-            long,
-            lat
-        );
+        addItemCheckpoint(itemId, status, desc, address(this), locName);
 
         _updateItemStatus(itemId, ItemStatus.Ongoing);
     }
@@ -158,9 +144,7 @@ contract CourierContract is Ownable, CourierFactory {
         uint256 itemId,
         string memory status,
         string memory desc,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory locName
     ) external itemExist(itemId) {
         Item storage item = _item[itemId];
 
@@ -175,7 +159,8 @@ contract CourierContract is Ownable, CourierFactory {
 
         item.dateCompleted = block.timestamp;
 
-        addItemCheckpoint(itemId, status, desc, msg.sender, locName, long, lat);
+        addItemCheckpoint(itemId, status, desc, msg.sender, locName);
+
         _updateItemStatus(itemId, ItemStatus.Completed);
     }
 
@@ -189,25 +174,49 @@ contract CourierContract is Ownable, CourierFactory {
         uint256 countryCode,
         string memory status,
         string memory desc,
-        string memory locName,
-        uint256 long,
-        uint256 lat
+        string memory locName
     ) external itemExist(itemId) {
         ContainerCompany containerContract = ContainerCompany(containerAddress);
         containerContract.queueItem(countryCode, address(this), itemId);
 
         _item[itemId].forwardedTo = containerAddress;
 
-        addItemCheckpoint(
-            itemId,
-            status,
-            desc,
-            address(this),
-            locName,
-            long,
-            lat
-        );
+        addItemCheckpoint(itemId, status, desc, address(this), locName);
 
         _updateItemStatus(itemId, ItemStatus.Ongoing);
+    }
+
+    //////////////////
+    ///   Getter   ///
+    //////////////////
+
+    //get all checkpoints based on item id
+    function getCheckpointOf(uint256 itemId)
+        external
+        view
+        itemExist(itemId)
+        returns (Checkpoint[] memory)
+    {
+        return _itemToCheckpoints[itemId];
+    }
+
+    //return all item details
+    function getItemDetails(uint256 itemId)
+        external
+        view
+        itemExist(itemId)
+        returns (Item memory)
+    {
+        return _item[itemId];
+    }
+
+    //return the status of the item
+    function getStatusItem(uint256 itemId)
+        external
+        view
+        itemExist(itemId)
+        returns (ItemStatus)
+    {
+        return _item[itemId].status;
     }
 }
