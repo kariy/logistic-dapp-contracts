@@ -31,7 +31,7 @@ abstract contract CourierFactory {
         Location location;
     }
 
-    struct Checkpoints {
+    struct Checkpoint {
         string status;
         string desc;
         address operator;
@@ -46,114 +46,107 @@ abstract contract CourierFactory {
         Destination destination;
         ItemStatus status;
         address forwardedTo;
-        uint256 date_created;
-        uint256 date_completed;
+        uint256 dateCreated;
+        uint256 dateCompleted;
         uint256 price;
     }
 }
 
 contract CourierContract is CourierFactory {
-    uint256 item_count = 0;
-    address ContainerContractAddress; //forward to container
-    mapping(uint256 => Item) public _item; //map the item
-    mapping(uint256 => Checkpoints[]) private _checkpoint; //map checkpoint
+    uint256 private _totalItems = 0;
 
-    function create_item(
-        uint256 _shipment,
-        string memory _destination,
-        //string memory _receiver_sign,
-        uint256 _price
-    ) public {
-        //make new item
-        Item storage newItem = _item[item_count];
+    //map the Item to its ID
+    mapping(uint256 => Item) public _item;
 
-        //item id
-        newItem.id = item_count;
+    //  map checkpoints to Item
+    mapping(uint256 => Checkpoint[]) private _itemToCheckpoints;
 
-        //item shipment type
-        if (_shipment == 0) {
-            newItem.shipmentType = ShipmentType.Domestic;
-        } else if (_shipment == 1) {
-            newItem.shipmentType = ShipmentType.International;
-        } else {
-            revert("Invalid input");
-        }
-
-        //item's destination
-        newItem.destination = _destination;
-
-        //item's status
-        newItem.status = ItemStatus.Processing;
-
-        //date created
-        newItem.date_created = block.timestamp;
-
-        //newItem.receiver_sign = _receiver_sign;
-
-        newItem.price = _price;
-        //increment count
-        item_count++;
+    modifier itemExist(uint256 id) {
+        require(id > 0 && id <= _totalItems, "Item of that ID does not exist!");
+        _;
     }
 
-    //BUAT MAPPING!!
-    function addCheckpoint(
+    function createItem(
+        ShipmentType shipmentType,
+        uint8 country,
+        address receiver,
+        string memory locName,
+        uint256 long,
+        uint256 lat
+    ) external returns (uint256) {
+        _totalItems++;
+
+        Item storage newItem = _item[_totalItems];
+        newItem.id = _totalItems;
+        newItem.countryDestination = country;
+        newItem.destination.receiver = receiver;
+        newItem.destination.location = Location(locName, long, lat);
+        newItem.dateCreated = block.timestamp;
+        newItem.shipmentType = shipmentType;
+
+        emit NewItem(newItem.id);
+
+        return newItem.id;
+    }
+
+    function addItemCheckpoint(
         uint256 itemId,
-        string memory _status,
-        string memory _desc,
-        address _operator,
-        string memory _Location_name,
-        uint256 _long,
-        uint256 _lat
-    ) public {
-        //fill in location
-        Location memory newLoc = Location(_Location_name, _long, _lat);
-
-        //fill in checkpoint
-        Checkpoints memory newCheckPoints = Checkpoints(
-            _status, //update status to ongoing
-            _desc, //description of item
-            _operator, //address of sender
-            newLoc, //input location
+        string memory status,
+        string memory desc,
+        address operator,
+        string memory locName,
+        uint256 long,
+        uint256 lat
+    ) public itemExist(itemId) {
+        Location memory newLoc = Location(locName, long, lat);
+        Checkpoint memory newCheckpoint = Checkpoint(
+            status,
+            desc,
+            operator,
+            newLoc,
             block.timestamp
-        ); //record timstamp
+        );
 
-        //push checkpoint according to itemid
-        _checkpoint[itemId].push(newCheckPoints);
-
-        //update itemstatus
-        updateItemStatus(itemId, ItemStatus.Ongoing);
+        // insert checkpoint to its Item
+        _itemToCheckpoints[itemId].push(newCheckpoint);
     }
 
-    function updateItemStatus(uint256 itemId, ItemStatus newStatus) public {
-        //update status based on itemid
-        //all_items[itemId].status = newStatus;
+    function _updateItemStatus(uint256 itemId, ItemStatus newStatus)
+        private
+        itemExist(itemId)
+    {
+        //  update status based on itemid
         _item[itemId].status = newStatus;
     }
 
-    //initiate shipment
-    function initiateShipment(
-        uint256 _itemId,
-        string memory _status,
-        string memory _desc,
-        string memory _locName,
-        uint256 _long,
-        uint256 _lat
-    ) public {
+    //  initiate shipment
+    function initItemShipment(
+        uint256 itemId,
+        string memory status,
+        string memory desc,
+        string memory locName,
+        uint256 long,
+        uint256 lat
+    ) external itemExist(itemId) {
         require(
-            _item[_itemId].status == ItemStatus.Processing,
-            "This container has already been shipped!"
+            _item[itemId].status == ItemStatus.Ongoing,
+            "This item has already been shipped!"
         );
 
-        addCheckpoint(
-            _itemId,
-            _status,
-            _desc,
-            msg.sender, //betul ke ni?
-            _locName,
-            _long,
-            _lat
+        // The operator of this checkpoint would be this contract
+        // because why would you want to let someone else initiate
+        // the shipment of the items?
+        addItemCheckpoint(
+            itemId,
+            status,
+            desc,
+            address(this),
+            locName,
+            long,
+            lat
         );
-        updateItemStatus(_itemId, ItemStatus.Shipped);
+
+        _updateItemStatus(itemId, ItemStatus.Ongoing);
     }
 
     //transfer event
@@ -179,7 +172,7 @@ contract CourierContract is CourierFactory {
 
         _item[_itemId].date_completed = block.timestamp;
 
-        addCheckpoint(
+        addItemCheckpoint(
             _itemId,
             _status,
             _desc,
@@ -188,7 +181,7 @@ contract CourierContract is CourierFactory {
             _long,
             _lat
         );
-        updateItemStatus(_itemId, ItemStatus.Delivered);
+        _updateItemStatus(_itemId, ItemStatus.Delivered);
 
         // if (msg.value < _item[_itemId].price) {
         //     revert("Transaction failed");
@@ -235,7 +228,7 @@ contract CourierContract is CourierFactory {
 
         _item[_itemId].forwarded_to = containerAddress;
 
-        addCheckpoint(
+        addItemCheckpoint(
             _itemId,
             _status,
             _desc,
@@ -245,6 +238,6 @@ contract CourierContract is CourierFactory {
             _lat
         );
 
-        updateItemStatus(_itemId, ItemStatus.Ongoing); //ongoing ke
+        _updateItemStatus(_itemId, ItemStatus.Ongoing); //ongoing ke
     }
 }
