@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
+
 import "./Ownable.sol";
 import "./ContainerCompany.sol";
 
@@ -52,7 +53,7 @@ abstract contract CourierFactory {
     }
 }
 
-contract CourierContract is CourierFactory {
+contract CourierContract is Ownable, CourierFactory {
     uint256 private _totalItems = 0;
 
     //map the Item to its ID
@@ -73,7 +74,7 @@ contract CourierContract is CourierFactory {
         string memory locName,
         uint256 long,
         uint256 lat
-    ) external returns (uint256) {
+    ) external onlyOwner returns (uint256) {
         _totalItems++;
 
         Item storage newItem = _item[_totalItems];
@@ -127,7 +128,7 @@ contract CourierContract is CourierFactory {
         string memory locName,
         uint256 long,
         uint256 lat
-    ) external itemExist(itemId) {
+    ) external itemExist(itemId) onlyOwner {
         require(
             _item[itemId].status == ItemStatus.Ongoing,
             "This item has already been shipped!"
