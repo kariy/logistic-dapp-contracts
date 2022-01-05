@@ -4,6 +4,10 @@ import "./Ownable.sol";
 import "./ContainerCompany.sol";
 
 abstract contract CourierFactory {
+    event NewItem(uint256 itemId);
+    event ItemShipped(uint256 itemId);
+    event ItemDelivered(uint256 itemId);
+
     enum ItemStatus {
         Processing,
         Ongoing,
