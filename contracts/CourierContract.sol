@@ -3,12 +3,7 @@ pragma solidity >=0.7.0;
 import "./Ownable.sol";
 import "./ContainerCompany.sol";
 
-contract CourierContract {
-    uint256 item_count = 0;
-    address ContainerContractAddress; //forward to container
-    mapping(uint256 => Item) public _item; //map the item
-    mapping(uint256 => Checkpoints[]) private _checkpoint; //map checkpoint
-
+abstract contract CourierFactory {
     enum ItemStatus {
         Processing,
         Ongoing,
@@ -51,6 +46,13 @@ contract CourierContract {
         uint256 date_completed;
         uint256 price;
     }
+}
+
+contract CourierContract is CourierFactory {
+    uint256 item_count = 0;
+    address ContainerContractAddress; //forward to container
+    mapping(uint256 => Item) public _item; //map the item
+    mapping(uint256 => Checkpoints[]) private _checkpoint; //map checkpoint
 
     function create_item(
         uint256 _shipment,
@@ -66,9 +68,9 @@ contract CourierContract {
 
         //item shipment type
         if (_shipment == 0) {
-            newItem.shipment = ShipmentType.Domestic;
+            newItem.shipmentType = ShipmentType.Domestic;
         } else if (_shipment == 1) {
-            newItem.shipment = ShipmentType.International;
+            newItem.shipmentType = ShipmentType.International;
         } else {
             revert("Invalid input");
         }
