@@ -170,7 +170,7 @@ contract CourierContract is CourierFactory {
         //     "The shipment of this container is already completed!"
         // );
 
-        _item[_itemId].date_completed = block.timestamp;
+        _item[_itemId].dateCompleted = block.timestamp;
 
         addItemCheckpoint(
             _itemId,
@@ -181,7 +181,7 @@ contract CourierContract is CourierFactory {
             _long,
             _lat
         );
-        _updateItemStatus(_itemId, ItemStatus.Delivered);
+        _updateItemStatus(_itemId, ItemStatus.Completed);
 
         // if (msg.value < _item[_itemId].price) {
         //     revert("Transaction failed");
@@ -196,23 +196,6 @@ contract CourierContract is CourierFactory {
     //     recipient.transfer(_item[itemId].price);
     // }
 
-    //forward function
-    // function setAddress(address _container_address) external {
-    //     //https://www.youtube.com/watch?v=YxU87o4U5iw
-    //     ContainerContractAddress = _container_address;
-    // }
-
-    // function call_queueItem(uint itemId) external{
-    //     ContainerCompany contract1 = ContainerCompany(ContainerContractAddress);
-    //     //address(this)
-    //     contract1.queueItem(_item[itemId].destination, address(this), itemId);
-    //     //addCheckpoint();
-    //     updateItemStatus(itemId, ItemStatus.Ongoing);
-    // }
-
-    // pandai2 kau adjust
-    // yang aku buat tu basically, what the function should do
-    // @param ...rest : just a placeholder kalau2 ada parameters lain yang perlu | diam ahh
     function forwardItemToContainer(
         address containerAddress,
         uint256 _itemId,
@@ -226,7 +209,7 @@ contract CourierContract is CourierFactory {
         ContainerCompany containerContract = ContainerCompany(containerAddress);
         containerContract.queueItem(countryCode, address(this), _itemId);
 
-        _item[_itemId].forwarded_to = containerAddress;
+        _item[_itemId].forwardedTo = containerAddress;
 
         addItemCheckpoint(
             _itemId,
