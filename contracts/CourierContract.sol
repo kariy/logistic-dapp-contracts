@@ -5,15 +5,14 @@ import "./ContainerCompany.sol";
 
 contract CourierContract {
     uint256 item_count = 0;
-    address ContainerContractAddress;//forward to container
-    mapping(uint256 => Item) public _item;//map the item
-    mapping(uint256 => Checkpoints[]) private _checkpoint;//map checkpoint
+    address ContainerContractAddress; //forward to container
+    mapping(uint256 => Item) public _item; //map the item
+    mapping(uint256 => Checkpoints[]) private _checkpoint; //map checkpoint
 
     enum ItemStatus {
         Processing,
-        Shipped,
         Ongoing,
-        Delivered,
+        Completed,
         LostInTransit
     }
 
@@ -23,33 +22,33 @@ contract CourierContract {
     }
 
     struct Location {
-        string location_name;
+        string name;
         uint256 long;
         uint256 lat;
     }
 
-    // struct Destination{
-    //     address receiver;
-    //     Location location;
-    // }
+    struct Destination {
+        address receiver;
+        Location location;
+    }
 
     struct Checkpoints {
         string status;
         string desc;
         address operator;
         Location location;
-        uint256 timestamp; //https://ethereum.stackexchange.com/questions/32173/how-to-handle-dates-in-solidity-and-web3
+        uint256 timestamp;
     }
 
     struct Item {
         uint256 id;
-        ShipmentType shipment;
-        string destination;
+        ShipmentType shipmentType;
+        uint8 countryDestination;
+        Destination destination;
         ItemStatus status;
-        Checkpoints[] check_point;
+        address forwardedTo;
         uint256 date_created;
         uint256 date_completed;
-        address forwarded_to;
         uint256 price;
     }
 
@@ -143,7 +142,7 @@ contract CourierContract {
             _itemId,
             _status,
             _desc,
-            msg.sender,//betul ke ni?
+            msg.sender, //betul ke ni?
             _locName,
             _long,
             _lat
@@ -162,7 +161,7 @@ contract CourierContract {
         string memory _location_name,
         uint256 _long,
         uint256 _lat
-    ) public{
+    ) public {
         // require(
         //     msg.sender == _item[itemId].destination.receiver,
         //     "Only the receiver of this item can complete the shipment!"
@@ -178,7 +177,7 @@ contract CourierContract {
             _itemId,
             _status,
             _desc,
-            msg.sender,//betul ke?
+            msg.sender, //betul ke?
             _location_name,
             _long,
             _lat
@@ -216,21 +215,20 @@ contract CourierContract {
     // yang aku buat tu basically, what the function should do
     // @param ...rest : just a placeholder kalau2 ada parameters lain yang perlu | diam ahh
     function forwardItemToContainer(
-        address containerAddress, 
-        uint256 _itemId, 
-        uint countryCode,
+        address containerAddress,
+        uint256 _itemId,
+        uint256 countryCode,
         string memory _status,
         string memory _desc,
         string memory _locName,
         uint256 _long,
-        uint256 _lat)
-        external
-    {
+        uint256 _lat
+    ) external {
         ContainerCompany containerContract = ContainerCompany(containerAddress);
         containerContract.queueItem(countryCode, address(this), _itemId);
-        
+
         _item[_itemId].forwarded_to = containerAddress;
-        
+
         addCheckpoint(
             _itemId,
             _status,
@@ -241,6 +239,6 @@ contract CourierContract {
             _lat
         );
 
-        updateItemStatus(_itemId, ItemStatus.Ongoing);//ongoing ke 
+        updateItemStatus(_itemId, ItemStatus.Ongoing); //ongoing ke
     }
 }
