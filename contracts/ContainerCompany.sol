@@ -218,12 +218,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         return (container.id, container.status);
     }
 
-    function setContainerAsMissing(
-        uint256 containerId,
-        string memory checkpointStatus,
-        string memory checkpointDesc,
-        string memory checkpointLocName
-    )
+    function setContainerAsMissing(uint256 containerId)
         external
         containerExist(containerId)
         onlyOwner
@@ -234,14 +229,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
         require(
             container.status != ContainerStatus.Completed,
             "The shipment of this container is already completed!"
-        );
-
-        addContainerCheckpoint(
-            containerId,
-            checkpointStatus,
-            checkpointDesc,
-            address(this),
-            checkpointLocName
         );
 
         _updateContainerStatus(container.id, ContainerStatus.LostInTransit);
