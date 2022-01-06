@@ -137,7 +137,7 @@ contract CourierCompany is CourierFactory {
         string memory desc,
         string memory locName
     )
-        external
+        public
         itemExist(itemId)
         returns (uint256 _itemId, ItemStatus _itemstatus)
     {
@@ -226,25 +226,23 @@ contract CourierCompany is CourierFactory {
         string memory status,
         string memory desc,
         string memory locName // uint256 _long, // uint256 _lat
-    ) external returns (uint256 _itemId, address _containerAddress) {
+    )
+        external
+        returns (
+            uint256 _itemId,
+            ItemStatus _itemStatus,
+            address _containerAddress
+        )
+    {
         ContainerCompany containerContract = ContainerCompany(containerAddress);
         containerContract.queueItem(countryCode, address(this), itemId);
 
-        _item[itemId].forwardedTo = containerAddress;
+        Item storage item = _item[itemId];
+        item.forwardedTo = containerAddress;
 
-        addItemCheckpoint(
-            itemId,
-            status,
-            desc,
-            msg.sender,
-            locName
-            // _long,
-            // _lat
-        );
+        initItemShipment(itemId, status, desc, locName);
 
-        _updateItemStatus(itemId, ItemStatus.Ongoing);
-
-        return (itemId, containerAddress);
+        return (item.id, item.status, item.forwardedTo);
     }
 
     //////////////////
