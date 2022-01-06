@@ -310,7 +310,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         container.status = newStatus;
     }
 
-    function _unqueueItemsToContainer(uint256 containerId) private {
+    function _dequeueItemsToContainer(uint256 containerId) private {
         uint8 countryCode = _container[containerId].countryDestination;
 
         ContainerItem[] storage qItems = _countryToItemQueues[countryCode];
