@@ -194,7 +194,7 @@ contract CourierContract is CourierFactory {
         );
         require(
             msg.value == _item[_itemId].price,
-            "You are not the receiver!"
+            "Not enough wei!"
         );
 
         _item[_itemId].dateCompleted = block.timestamp;
@@ -263,6 +263,11 @@ contract CourierContract is CourierFactory {
     //return the status of the item
     function getStatusItem(uint256 itemId)external view itemExist(itemId) returns(ItemStatus){
         return _item[itemId].status;
+    }
+
+    //return total items
+    function getTotalItem()external view returns(uint256){
+        return _totalItems;
     }
 
 }
