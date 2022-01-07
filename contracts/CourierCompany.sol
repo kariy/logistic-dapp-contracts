@@ -109,12 +109,12 @@ contract CourierCompany is CourierFactory {
         string memory desc,
         address operator,
         string memory locName
-    )
-        public
-        // uint256 long,
-        // uint256 lat
-        itemExist(itemId)
-    {
+    ) public itemExist(itemId) {
+        require(
+            _item[itemId].status != ItemStatus.Completed,
+            "This item has already been delivered!"
+        );
+
         Location memory newLoc = Location(
             locName
             /*long, 
@@ -144,6 +144,10 @@ contract CourierCompany is CourierFactory {
         require(
             _item[itemId].status != ItemStatus.Ongoing,
             "This item has already been shipped!"
+        );
+        require(
+            _item[itemId].status != ItemStatus.Completed,
+            "This item has already been delivered!"
         );
 
         // The operator of this checkpoint would be this contract
