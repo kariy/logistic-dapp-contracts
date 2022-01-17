@@ -104,7 +104,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         newContainer.shipmentType = shipmentType;
 
         // insert all queued Items of countryCode into this Container
-        _unqueueItemsToContainer(newContainer.id);
+        _dequeueItemsToContainer(newContainer.id);
 
         emit NewContainer(newContainer.id);
 
