@@ -70,7 +70,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -306,7 +307,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -381,7 +383,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -400,7 +403,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -436,7 +440,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -455,7 +460,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -508,7 +514,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.2+commit.661d1103\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"ContainerDelivered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"ContainerShipped\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"NewContainer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"desc\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"locName\",\"type\":\"string\"}],\"name\":\"addContainerCheckpoint\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"checkpointStatus\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"checkpointDesc\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"checkpointLocName\",\"type\":\"string\"}],\"name\":\"completeContainerShipment\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_containerId\",\"type\":\"uint256\"},{\"internalType\":\"enum ContainerFactory.ContainerStatus\",\"name\":\"_status\",\"type\":\"uint8\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"enum ContainerFactory.ShipmentType\",\"name\":\"shipmentType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"country\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"locName\",\"type\":\"string\"}],\"name\":\"createContainer\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_containerId\",\"type\":\"uint256\"},{\"internalType\":\"enum ContainerFactory.ContainerStatus\",\"name\":\"_status\",\"type\":\"uint8\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"getCheckpointsOf\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"desc\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"internalType\":\"struct ContainerFactory.Location\",\"name\":\"location\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"timeStamp\",\"type\":\"uint256\"}],\"internalType\":\"struct ContainerFactory.Checkpoint[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"getContainerOf\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"enum ContainerFactory.ShipmentType\",\"name\":\"shipmentType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"countryDestination\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"internalType\":\"struct ContainerFactory.Location\",\"name\":\"location\",\"type\":\"tuple\"}],\"internalType\":\"struct ContainerFactory.Destination\",\"name\":\"destination\",\"type\":\"tuple\"},{\"internalType\":\"enum ContainerFactory.ContainerStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"dateCreated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dateCompleted\",\"type\":\"uint256\"}],\"internalType\":\"struct ContainerFactory.Container\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"getItemsOf\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"courierAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"courierItemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dateCreated\",\"type\":\"uint256\"}],\"internalType\":\"struct ContainerFactory.ContainerItem[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"getReceiverOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"getStatusOf\",\"outputs\":[{\"internalType\":\"enum ContainerFactory.ContainerStatus\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalContainers\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"checkpointStatus\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"checkpointDesc\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"checkpointLocName\",\"type\":\"string\"}],\"name\":\"initContainerShipment\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_containerId\",\"type\":\"uint256\"},{\"internalType\":\"enum ContainerFactory.ContainerStatus\",\"name\":\"_status\",\"type\":\"uint8\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"countryDest\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"courierAddr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"courierItemId\",\"type\":\"uint256\"}],\"name\":\"queueItem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"containerId\",\"type\":\"uint256\"}],\"name\":\"setContainerAsMissing\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_containerId\",\"type\":\"uint256\"},{\"internalType\":\"enum ContainerFactory.ContainerStatus\",\"name\":\"_status\",\"type\":\"uint8\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"createContainer(uint8,uint8,address,string)\":{\"details\":\"Container ID starts from 1\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"queueItem(uint256,address,uint256)\":{\"details\":\"Queue Item (according to their country destination) for Container insertion\",\"params\":{\"courierAddr\":\"Address of the Courier contract that the Item belongs to.\",\"courierItemId\":\"Id of the Item inside the Courier contract.\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"stateVariables\":{\"_container\":{\"details\":\"Container ID >= 1\"},\"_containerToCheckpoints\":{\"details\":\"Container checkpoints\"},\"_containerToItems\":{\"details\":\"List of items inserted into a container\"},\"_countryToItemQueues\":{\"details\":\"List of Item which are yet to be inserted into a Container, according to their country codeAll Item object forwarded to this contract will be inserted here.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"createContainer(uint8,uint8,address,string)\":{\"notice\":\"Create a new Container\"},\"getTotalContainers()\":{\"notice\":\"Getter   ///\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ContainerCompany.sol\":\"ContainerCompany\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ContainerCompany.sol\":{\"keccak256\":\"0x41dec7559dbfe2e35289df1cb9f903797020086dd756836f04be89afb229cdfd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2bafa8ef7bb3e5b06fba6ecaa3e33278530d8b9dec42c61bb7d38c7128d1c1a8\",\"dweb:/ipfs/QmTAkhd7r7whcbeJM62vBFrpohurP74Cg7tpkLvBf4qnkC\"]},\"project:/contracts/Ownable.sol\":{\"keccak256\":\"0x5e73177eb8ba11103394181029fbf4af1e2c102de76fb81620c586b005761a8d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d970772576c96303e276070fab542fcc19ac6d56d4a4b9104ca6abf4926af2da\",\"dweb:/ipfs/QmZrBVKxjPy9jx3mAnLJ5ixGUZEbVCVV1R5MBGA2m2Nims\"]}},\"version\":1}",
@@ -29984,9 +29991,76 @@
     "name": "solc",
     "version": "0.8.2+commit.661d1103.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "5777": {
+      "events": {
+        "0xfd5ab16ce177c506b5ef58adb2e2dbdd390aa6e59631295a662a4ee80f7e263a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "containerId",
+              "type": "uint256"
+            }
+          ],
+          "name": "ContainerDelivered",
+          "type": "event"
+        },
+        "0x2f1d6116189a14477855ff74caaa2379d8fa6f42199ffa62ded5ae9d2686289e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "containerId",
+              "type": "uint256"
+            }
+          ],
+          "name": "ContainerShipped",
+          "type": "event"
+        },
+        "0xd41c16c766a055516fa76d4c9b87e5f059c8c6486b9055d77f6ab7240f8b4848": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "containerId",
+              "type": "uint256"
+            }
+          ],
+          "name": "NewContainer",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xc31db6F2047BeF92A6B66bB762539C0c406ae3d4",
+      "transactionHash": "0x040ec7b877a1fe23920548f2f97f0ff021f1f528d3e0f1cdb260e9f30ca95be8"
+    }
+  },
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-01-24T08:06:16.262Z",
+  "updatedAt": "2022-01-24T12:24:11.819Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {

@@ -121,11 +121,13 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     },
     {
       "inputs": [
@@ -280,7 +282,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -411,7 +414,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -501,7 +505,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -520,7 +525,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -533,7 +539,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.2+commit.661d1103\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"ItemDelivered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"ItemShipped\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"NewItem\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"_item\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"enum CourierFactory.ShipmentType\",\"name\":\"shipmentType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"countryDestination\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"internalType\":\"struct CourierFactory.Location\",\"name\":\"location\",\"type\":\"tuple\"}],\"internalType\":\"struct CourierFactory.Destination\",\"name\":\"destination\",\"type\":\"tuple\"},{\"internalType\":\"enum CourierFactory.ItemStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"forwardedTo\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"dateCreated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dateCompleted\",\"type\":\"uint256\"},{\"internalType\":\"address payable\",\"name\":\"payee\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"desc\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"locName\",\"type\":\"string\"}],\"name\":\"addItemCheckpoint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"desc\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"locName\",\"type\":\"string\"}],\"name\":\"completeItemShipment\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_itemId\",\"type\":\"uint256\"},{\"internalType\":\"enum CourierFactory.ItemStatus\",\"name\":\"_itemstatus\",\"type\":\"uint8\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"enum CourierFactory.ShipmentType\",\"name\":\"shipmentType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"country\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"locName\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"payee\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"name\":\"createItem\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_itemId\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"containerAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"countryCode\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"desc\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"locName\",\"type\":\"string\"}],\"name\":\"forwardItemToContainer\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_itemId\",\"type\":\"uint256\"},{\"internalType\":\"enum CourierFactory.ItemStatus\",\"name\":\"_itemStatus\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"_containerAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"getCheckpointsOf\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"desc\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"internalType\":\"struct CourierFactory.Location\",\"name\":\"location\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"internalType\":\"struct CourierFactory.Checkpoint[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"getItemOf\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"enum CourierFactory.ShipmentType\",\"name\":\"shipmentType\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"countryDestination\",\"type\":\"uint8\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"}],\"internalType\":\"struct CourierFactory.Location\",\"name\":\"location\",\"type\":\"tuple\"}],\"internalType\":\"struct CourierFactory.Destination\",\"name\":\"destination\",\"type\":\"tuple\"},{\"internalType\":\"enum CourierFactory.ItemStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"forwardedTo\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"dateCreated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"dateCompleted\",\"type\":\"uint256\"},{\"internalType\":\"address payable\",\"name\":\"payee\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"}],\"internalType\":\"struct CourierFactory.Item\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"getStatusOf\",\"outputs\":[{\"internalType\":\"enum CourierFactory.ItemStatus\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalItems\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"desc\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"locName\",\"type\":\"string\"}],\"name\":\"initItemShipment\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_itemId\",\"type\":\"uint256\"},{\"internalType\":\"enum CourierFactory.ItemStatus\",\"name\":\"_itemstatus\",\"type\":\"uint8\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"itemId\",\"type\":\"uint256\"}],\"name\":\"setItemAsMissing\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_itemId\",\"type\":\"uint256\"},{\"internalType\":\"enum CourierFactory.ItemStatus\",\"name\":\"_itemstatus\",\"type\":\"uint8\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"getCheckpointsOf(uint256)\":{\"notice\":\"Getter   ///\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/CourierCompany.sol\":\"CourierCompany\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ContainerCompany.sol\":{\"keccak256\":\"0x41dec7559dbfe2e35289df1cb9f903797020086dd756836f04be89afb229cdfd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2bafa8ef7bb3e5b06fba6ecaa3e33278530d8b9dec42c61bb7d38c7128d1c1a8\",\"dweb:/ipfs/QmTAkhd7r7whcbeJM62vBFrpohurP74Cg7tpkLvBf4qnkC\"]},\"project:/contracts/CourierCompany.sol\":{\"keccak256\":\"0x08840a2333ecdb7a8e6c68f1387b056dd1cde86c722d3b9cbee889e6f42076e1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fa3266c2741bd2c3b99cef6517681f967c9a9647abc7d50797d3a4743bd96740\",\"dweb:/ipfs/QmeY1JFUDx3bsPLnxLYri7gaZmFPqLjPutjcqKHVgW67zX\"]},\"project:/contracts/Ownable.sol\":{\"keccak256\":\"0x5e73177eb8ba11103394181029fbf4af1e2c102de76fb81620c586b005761a8d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d970772576c96303e276070fab542fcc19ac6d56d4a4b9104ca6abf4926af2da\",\"dweb:/ipfs/QmZrBVKxjPy9jx3mAnLJ5ixGUZEbVCVV1R5MBGA2m2Nims\"]}},\"version\":1}",
@@ -29946,9 +29953,17 @@
     "name": "solc",
     "version": "0.8.2+commit.661d1103.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x8A92517958d27f6D43500E606C2FD0E7Ad378CFb",
+      "transactionHash": "0xa34b4779045790b5ed8aee3f17ac4bced73453bae14be73d71801cf03e028060"
+    }
+  },
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-01-24T08:06:16.277Z",
+  "updatedAt": "2022-01-24T12:24:11.134Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},
