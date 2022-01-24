@@ -63,8 +63,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
 
     uint256 private _totalContainers = 0;
 
-    /// @notice A table of all Container based on its ID
-    /// @dev ID >= 1
+    /// @dev Container ID >= 1
     mapping(uint256 => Container) private _container;
 
     /// @dev List of items inserted into a container
@@ -248,27 +247,9 @@ contract ContainerCompany is Ownable, ContainerFactory {
         external
         view
         containerExist(containerId)
-        returns (
-            uint256 id,
-            ShipmentType shipmentType,
-            uint8 countryDestination,
-            Destination memory destination,
-            ContainerStatus status,
-            uint256 dateCreated,
-            uint256 dateCompleted
-        )
+        returns (Container memory)
     {
-        Container storage container = _container[containerId];
-
-        return (
-            container.id,
-            container.shipmentType,
-            container.countryDestination,
-            container.destination,
-            container.status,
-            container.dateCreated,
-            container.dateCompleted
-        );
+        return _container[containerId];
     }
 
     function getStatusOf(uint256 containerId)
@@ -287,6 +268,15 @@ contract ContainerCompany is Ownable, ContainerFactory {
         returns (ContainerItem[] memory)
     {
         return _containerToItems[containerId];
+    }
+
+    function getReceiverOf(uint256 containerId)
+        external
+        view
+        containerExist(containerId)
+        returns (address)
+    {
+        return _container[containerId].destination.receiver;
     }
 
     function getCheckpointsOf(uint256 containerId)
