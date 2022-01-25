@@ -37,7 +37,7 @@ abstract contract ContainerFactory {
         string desc;
         address operator;
         Location location;
-        uint256 timeStamp;
+        uint256 timestamp;
     }
 
     struct Destination {
@@ -47,16 +47,16 @@ abstract contract ContainerFactory {
 
     struct Container {
         uint256 id;
-        ShipmentType shipmentType;
-        uint8 countryDestination;
-        Destination destination;
-        ContainerStatus status;
         uint256 dateCreated;
         uint256 dateCompleted;
+        uint8 countryDestination;
+        ShipmentType shipmentType;
+        Destination destination;
+        ContainerStatus status;
     }
 }
 
-contract ContainerCompany is Ownable, ContainerFactory {
+contract ContainerCompany is ContainerFactory {
     /// @dev List of Item which are yet to be inserted into a Container, according to their country code
     /// @dev All Item object forwarded to this contract will be inserted here.
     mapping(uint256 => ContainerItem[]) private _countryToItemQueues;
@@ -87,11 +87,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         uint8 country,
         address receiver,
         string memory locName
-    )
-        external
-        onlyOwner
-        returns (uint256 _containerId, ContainerStatus _status)
-    {
+    ) external returns (uint256 _containerId, ContainerStatus _status) {
         _totalContainers++;
 
         Container storage newContainer = _container[_totalContainers];
@@ -156,7 +152,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
     )
         external
         containerExist(containerId)
-        onlyOwner
         returns (uint256 _containerId, ContainerStatus _status)
     {
         Container storage container = _container[containerId];
@@ -192,6 +187,7 @@ contract ContainerCompany is Ownable, ContainerFactory {
         returns (uint256 _containerId, ContainerStatus _status)
     {
         Container storage container = _container[containerId];
+        container.dateCompleted = block.timestamp;
 
         require(
             msg.sender == container.destination.receiver,
@@ -220,7 +216,6 @@ contract ContainerCompany is Ownable, ContainerFactory {
     function setContainerAsMissing(uint256 containerId)
         external
         containerExist(containerId)
-        onlyOwner
         returns (uint256 _containerId, ContainerStatus _status)
     {
         Container storage container = _container[containerId];
@@ -247,9 +242,27 @@ contract ContainerCompany is Ownable, ContainerFactory {
         external
         view
         containerExist(containerId)
-        returns (Container memory)
+        returns (
+            uint256 id,
+            ShipmentType shipmentType,
+            uint8 countryDestination,
+            Destination memory destination,
+            ContainerStatus status,
+            uint256 dateCreated,
+            uint256 dateCompleted
+        )
     {
-        return _container[containerId];
+        Container storage container = _container[containerId];
+
+        return (
+            container.id,
+            container.shipmentType,
+            container.countryDestination,
+            container.destination,
+            container.status,
+            container.dateCreated,
+            container.dateCompleted
+        );
     }
 
     function getStatusOf(uint256 containerId)
