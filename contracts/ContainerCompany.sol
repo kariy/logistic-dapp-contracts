@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
-import "./Ownable.sol";
-
 abstract contract ContainerFactory {
     event NewContainer(uint256 containerId);
     event ContainerShipped(uint256 containerId);
@@ -281,15 +279,6 @@ contract ContainerCompany is ContainerFactory {
         returns (ContainerItem[] memory)
     {
         return _containerToItems[containerId];
-    }
-
-    function getReceiverOf(uint256 containerId)
-        external
-        view
-        containerExist(containerId)
-        returns (address)
-    {
-        return _container[containerId].destination.receiver;
     }
 
     function getCheckpointsOf(uint256 containerId)

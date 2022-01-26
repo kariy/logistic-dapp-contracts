@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
-import "./Ownable.sol";
 import "./ContainerCompany.sol";
 
 abstract contract CourierFactory {
@@ -266,9 +265,33 @@ contract CourierCompany is CourierFactory {
         external
         view
         itemExist(itemId)
-        returns (Item memory)
+        returns (
+            uint256 id,
+            ShipmentType shipmentType,
+            uint8 countryDestination,
+            Destination memory destination,
+            ItemStatus status,
+            address forwardedTo,
+            uint256 dateCreated,
+            uint256 dateCompleted,
+            address payable payee,
+            uint256 price
+        )
     {
-        return _item[itemId];
+        Item storage item = _item[itemId];
+
+        return (
+            item.id,
+            item.shipmentType,
+            item.countryDestination,
+            item.destination,
+            item.status,
+            item.forwardedTo,
+            item.dateCreated,
+            item.dateCompleted,
+            item.payee,
+            item.price
+        );
     }
 
     function getStatusOf(uint256 itemId)
